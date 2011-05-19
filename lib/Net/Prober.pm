@@ -161,7 +161,7 @@ sub probe_icmp {
     $pinger->close();
 
     my $result = {
-        ok => $ok,
+        ok => $ok ? 1 : 0,
         time => $elapsed,
         ip => $ip,
     };
@@ -222,7 +222,7 @@ sub probe_http {
     }
 
     return {
-        ok      => $good,
+        ok      => $good ? 1 : 0,
         status  => $resp->status_line,
         time    => $elapsed,
         content => $content,
@@ -268,7 +268,7 @@ sub probe_tcp {
     my $elapsed = Time::HiRes::tv_interval($t0);
 
     my $result = {
-        ok => $good,
+        ok   => $good ? 1 : 0,
         time => $elapsed,
         host => $host,
         port => $port,

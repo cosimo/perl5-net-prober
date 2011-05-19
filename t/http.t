@@ -14,7 +14,7 @@ use strict;
 use warnings;
 
 use LWP::Online ':skip_all';
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 use Net::Prober;
 
@@ -46,3 +46,15 @@ $result = Net::Prober::probe({
 });
 
 ok($result->{ok});
+
+$result = Net::Prober::probe_http({
+    host => 'localhost',
+    port => 8433,
+    url  => '/ping.html',
+    timeout => 1.0,
+});
+
+ok(exists $result->{ok} && $result->{ok} =~ m{^[01]$},
+    "Result status ('ok') shouldn't be a blank string"
+);
+

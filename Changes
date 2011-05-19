@@ -1,0 +1,12 @@
+Revision history for Net::Prober
+
+0.02 - Thu May 19 20:38:58 Australia/Melbourne 2011
+
+    Make sure probe_http() returns "ok" as "0" or "1"
+      and not blank. That happened for connection refused
+      errors for example.
+
+0.01 - Thu May 19 09:25:01 Australia/Melbourne 2011
+
+    First CPAN release
+
