@@ -73,6 +73,40 @@ matches a given regular expression, or has an exact md5 hash.
 
 =back
 
+=head1 MOTIVATION
+
+There must be tons of ready-made modules that do exactly
+what this module tries to do. So why?
+
+One reason is that, as ridiculous as this might sound,
+I couldn't find any CPAN module to do this.
+
+For example, I looked at the nagios code, as Nagios
+does this (and more) but I couldn't find anything
+even remotely similar.
+
+Another reason is that I need this code to be very
+compact and flexible enough to be wired directly
+to a small config file, to be able to specify
+the probe arguments as JSON. This is inspired by
+the Varnish probe config block:
+
+    # This is my config file.
+    # It's JSON presumably...
+
+    "backends": {
+        "1.2.3.4" : {
+            "datacenter" : "norway1",
+            "probe" : {
+                "proto": "tcp",
+                "port" : "8432",
+                "timeout" : 1.0,
+            },
+        },
+
+        # ...
+    }
+
 =cut
 
 use 5.006;
