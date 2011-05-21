@@ -1,5 +1,10 @@
 Revision history for Net::Prober
 
+0.03 - Sat May 21 09:39:01 Australia/Melbourne 2011
+
+    Removed all '//' operator usage to make the
+      module work on perl < 5.10
+
 0.02 - Thu May 19 20:38:58 Australia/Melbourne 2011
 
     Make sure probe_http() returns "ok" as "0" or "1"
