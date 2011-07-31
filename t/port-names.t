@@ -18,6 +18,10 @@ use Net::Prober;
 
 is(Net::Prober::port_name_to_num(undef), undef);
 is(Net::Prober::port_name_to_num(23), 23);
-is(Net::Prober::port_name_to_num("http"), 80);
+SKIP: {
+    skip("'http' port name apparently not defined on Solaris", 1) if "solaris" eq $^O;
+    is(Net::Prober::port_name_to_num("http"), 80);
+}
 is(Net::Prober::port_name_to_num("ftp"), 21);
 is(Net::Prober::port_name_to_num("ssh"), 22);
+

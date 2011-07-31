@@ -1,5 +1,11 @@
 Revision history for Net::Prober
 
+0.04 - Sun Jul 31 09:49:44 Europe/Oslo 2011
+
+    Fixed a port name conversion test failure on Solaris.
+      Thanks to CPAN testers report by Jost Krieger:
+      http://www.cpantesters.org/cpan/report/4b4e759a-b8d9-11e0-90f5-ce1b785ebe45
+
 0.03 - Sat May 21 09:39:01 Australia/Melbourne 2011
 
     Removed all '//' operator usage to make the
