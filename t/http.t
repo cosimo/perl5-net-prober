@@ -14,7 +14,7 @@ use strict;
 use warnings;
 
 use LWP::Online ':skip_all';
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use Net::Prober;
 
@@ -41,11 +41,13 @@ $result = Net::Prober::probe({
     proto   => 'http',
     host    => 'www.opera.com',
     url     => '/browser/',
-    match   => 'Faster',
+    match   => 'Opera',
     timeout => 5.0,
 });
 
 ok($result->{ok});
+
+my $t0 = time;
 
 $result = Net::Prober::probe_http({
     host => 'localhost',
@@ -54,7 +56,13 @@ $result = Net::Prober::probe_http({
     timeout => 1.0,
 });
 
+my $t1 = time;
+
 ok(exists $result->{ok} && $result->{ok} =~ m{^[01]$},
     "Result status ('ok') shouldn't be a blank string"
+);
+
+ok(($t1 - $t0) <= 2,
+    "Probe of unavailable service should honor timeout"
 );
 
