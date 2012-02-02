@@ -24,6 +24,7 @@ sub open_socket {
     );
 
     if ($ssl) {
+        #arn "# Trying to connect through SSL to $host:$port with timeout $timeout\n";
         require IO::Socket::SSL;
         return IO::Socket::SSL->new(
             PeerAddr => $host,
@@ -34,43 +35,19 @@ sub open_socket {
     }
 
     # Unix sockets support (ex.: /tmp/mysqld.sock)
-    if ($port =~ m{^/}) {
+    if (defined $port && $port =~ m{^/}) {
         require IO::Socket::UNIX;
         return IO::Socket::UNIX->new($port);
     }
 
     # Normal TCP socket to host:port
+    #arn "# Trying to connect to $host:$port with timeout $timeout\n";
     return IO::Socket::INET->new(
         PeerAddr => $host,
         PeerPort => $port,
         Timeout  => $timeout,
     );
 
-}
-
-=head2 C<port_name_to_num($port)>
-
-Converts a given port name (ex.: C<ssh>, or C<http>) to
-a number. Returns the number as result.
-
-If the given port doesn't look like a port name,
-then you get back what you passed as argument,
-unchanged.
-
-=cut
-
-sub port_name_to_num {
-    my ($self, $port) = @_;
-
-    if (! $port) {
-        $port = $self;
-    }
-
-    if (defined $port and $port ne "" and $port =~ m{^\D}) {
-        $port = (getservbyname($port, "tcp"))[2];
-    }
-
-    return $port;
 }
 
 1;

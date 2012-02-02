@@ -123,7 +123,30 @@ use Time::HiRes ();
 
 =head1 FUNCTIONS
 
+=head2 C<port_name_to_num($port)>
+
+Converts a given port name (ex.: C<ssh>, or C<http>) to
+a number. Returns the number as result.
+
+If the given port doesn't look like a port name,
+then you get back what you passed as argument,
+unchanged.
+
 =cut
+
+sub port_name_to_num {
+    my ($self, $port) = @_;
+
+    if (! $port) {
+        $port = $self;
+    }
+
+    if (defined $port and $port ne "" and $port =~ m{^\D}) {
+        $port = (getservbyname($port, "tcp"))[2];
+    }
+
+    return $port;
+}
 
 sub probe_any {
     my ($class, $args) = @_;
@@ -148,6 +171,18 @@ sub probe_icmp {
 
 sub probe_ping {
     return probe_any('ping', @_);
+}
+
+sub probe_imap {
+    return probe_any('imap', @_);
+}
+
+sub probe_ssh {
+    return probe_any('ssh', @_);
+}
+
+sub probe_smtp {
+    return probe_any('smtp', @_);
 }
 
 sub probe_http {
