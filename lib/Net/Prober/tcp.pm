@@ -5,6 +5,7 @@ use warnings;
 use base 'Net::Prober::Probe::TCP';
 
 use Carp ();
+use Net::Prober ();
 
 sub probe {
     my ($self, $args) = @_;
@@ -12,7 +13,7 @@ sub probe {
     my ($host, $port, $timeout, $proto) =
         $self->parse_args($args, qw(host port timeout proto));
 
-    $port = $self->port_name_to_num($port);
+    $port = Net::Prober::port_name_to_num($port);
 
     if (! defined $port or $port == 0) {
         Carp::croak("Can't probe: undefined port");
