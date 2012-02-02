@@ -37,7 +37,7 @@ sub probe_failed {
 
     if (! exists $info{time}) {
         my $elapsed = exists $self->{_time}
-            ? $self->elapsed_time()
+            ? $self->time_elapsed()
             : 0.0;
         $info{time} = $elapsed;
     }
@@ -59,7 +59,7 @@ sub probe_ok {
 
     if (! exists $info{time}) {
         my $elapsed = exists $self->{_time}
-            ? $self->elapsed_time()
+            ? $self->time_elapsed()
             : 0.0;
         $info{time} = $elapsed;
     }
