@@ -41,8 +41,8 @@ sub probe {
     # SSH-protoversion-softwareversion SP comments CR LF
     if ($ssh_banner !~ qr{^SSH-
         (?<protoversion>    [^\-]+) -
-        (?<softwareversion> [^\s]+) \s
-        (?<comments>        .*) $}x) {
+        (?<softwareversion> [^\s]+) \s?
+        (?<comments>        .*)? $}x) {
         return $self->probe_failed(
             reason => qq{Non-RFC compliant SSH banner from $host:$port? ($ssh_banner)},
         );
