@@ -114,6 +114,12 @@ sub parse_args {
 
     my $args_with_def = $self->process_defaults($args);
 
+    if (exists $args_with_def->{port} && defined $args_with_def->{port}) {
+        $args_with_def->{port} = Net::Prober::port_name_to_num(
+            $args_with_def->{port}
+        );
+    }
+
     if (! @wanted) {
         return $args_with_def;
     }
