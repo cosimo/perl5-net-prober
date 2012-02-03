@@ -38,7 +38,7 @@ ok(exists $result->{md5}
 );
 
 $result = Net::Prober::probe({
-    proto   => 'http',
+    class   => 'http',
     host    => 'www.opera.com',
     url     => '/browser/',
     match   => 'Opera',
