@@ -135,7 +135,11 @@ unchanged.
 =cut
 
 sub port_name_to_num {
-    my ($port) = @_;
+    my ($self, $port) = @_;
+
+    if (! $port) {
+        $port = $self;
+    }
 
     if (defined $port and $port ne "" and $port =~ m{^\D}) {
         $port = (getservbyname($port, "tcp"))[2];
@@ -144,141 +148,49 @@ sub port_name_to_num {
     return $port;
 }
 
-sub probe_icmp {
-    my ($probe) = @_;
+sub probe_any {
+    my ($class, $args) = @_;
+    my $full_pkg = $class;
 
-    my ($host, $port, $timeout, $proto, $size) =
-        @{$probe}{qw(host port timeout proto size)};
+    # Open up for != Net::Prober::* classes
+    if ($full_pkg !~ m{::}) {
+        $full_pkg = "Net::Prober::${full_pkg}";
+    }
 
-    # icmp requires root privileges
-    my $ping_proto = ($< | $>) ? "tcp" : "icmp";
-
-    my $pinger = Net::Ping->new($ping_proto, $timeout);
-    $pinger->hires();
-    $pinger->port_number($port) if defined $port;
-
-    my ($ok, $elapsed, $ip) = $pinger->ping($host);
-    $pinger->close();
-
-    my $result = {
-        ok => $ok ? 1 : 0,
-        time => $elapsed,
-        ip => $ip,
+    eval "require $full_pkg; 1" or do {
+        Carp::croak("Couldn't load $full_pkg class: $@");
     };
 
-    return $result;
+    my $p = $full_pkg->new();
+    return $p->probe($args);
+}
+
+sub probe_icmp {
+    return probe_any('ping', @_);
+}
+
+sub probe_ping {
+    return probe_any('ping', @_);
+}
+
+sub probe_imap {
+    return probe_any('imap', @_);
+}
+
+sub probe_ssh {
+    return probe_any('ssh', @_);
+}
+
+sub probe_smtp {
+    return probe_any('smtp', @_);
 }
 
 sub probe_http {
-    my ($probe) = @_;
-
-    my ($host, $port, $timeout, $proto, $url, $expected_md5, $content_match) =
-        @{$probe}{qw(host port timeout proto url md5 match)};
-
-    my $ua = LWPx::ParanoidAgent->new();
-    $ua->agent("Net::Prober/$Net::Prober::VERSION");
-    $ua->max_redirect(0);
-    $ua->timeout($timeout);
-
-    $proto = 'http' if not defined $proto;
-
-    if ($proto eq 'http') {
-        $port ||= 80;
-    }
-    elsif ($proto eq 'https') {
-        $port ||= 443;
-    }
-
-    $url = '/' unless defined $url;
-    $url =~ s{^/+}{};
-
-    my $scheme = $port == 443 ? "https" : "http";
-    my $probe_url = "$scheme://$host:$port/$url";
-
-    my $t0 = [ Time::HiRes::gettimeofday() ];
-    my $resp = $ua->get($probe_url);
-    my $elapsed = Time::HiRes::tv_interval($t0);
-    my $content = $resp->content();
-
-    my $good = $resp->is_redirect() || $resp->is_success();
-
-    if ($good and defined $expected_md5) {
-        my $md5 = Digest::MD5::md5_hex($content);
-        if ($md5 ne $expected_md5) {
-            $good = 0;
-        }
-    }
-
-    if ($good and defined $content_match) {
-        my $match_re;
-        eval {
-            $match_re = qr{$content_match}ms;
-        } or do {
-            Carp::croak("Invalid regex for http content match '$content_match'\n");
-        };
-        if ($content !~ $match_re) {
-            $good = 0;
-        }
-    }
-
-    return {
-        ok      => $good ? 1 : 0,
-        status  => $resp->status_line,
-        time    => $elapsed,
-        content => $content,
-        md5     => $content ? Digest::MD5::md5_hex($content) : undef,
-    };
-
+    return probe_any('http', @_);
 }
 
 sub probe_tcp {
-    my ($probe) = @_;
-
-    my ($host, $port, $timeout, $proto) =
-        @{$probe}{qw(host port timeout proto)};
-
-    $port = port_name_to_num($port);
-    if (! defined $port or $port == 0) {
-        Carp::croak("Can't probe: undefined port");
-    }
-    $timeout ||= 1.0;
-
-    my $t0 = [ Time::HiRes::gettimeofday() ];
-
-    my $sock = IO::Socket::INET->new(
-        PeerAddr => $host,
-        PeerPort => $port,
-        Proto    => $proto,
-        Timeout  => $timeout,
-    );
-
-    my $good = 0;
-    my $reason;
-
-    if (! $sock) {
-        $reason = "Socket open failed";
-    }
-    else {
-        $good = $sock->connected() && $sock->close();
-        if (! $good) {
-            $reason = "Socket connect or close failed";
-        }
-    }
-
-    my $elapsed = Time::HiRes::tv_interval($t0);
-
-    my $result = {
-        ok   => $good ? 1 : 0,
-        time => $elapsed,
-        host => $host,
-        port => $port,
-    };
-
-    if (! $good) {
-        $result->{reason} = $reason;
-    }
-
-    return $result;
+    return probe_any('tcp', @_);
 }
 
 =head2 C<probe( \%probe_spec )>
@@ -325,7 +237,7 @@ Returns the results as hashref. Example:
         timeout => 0.5,
     });
 
-You will get *at least* these keys:
+You will get B<at least> these keys:
 
     $result = {
         ok => 1,
@@ -357,7 +269,7 @@ Example:
 =item C<md5>
 
 Checks if the whole content of the response matches a given
-MD5 hash. You can calculate the MD5 of a given URL with:
+MD5 hash. B<You can calculate the MD5 of a given URL with>:
 
     wget -q -O - http://your.url.here | md5sum
 
@@ -366,6 +278,20 @@ MD5 hash. You can calculate the MD5 of a given URL with:
 What URL to download. By default it uses C</>.
 
 =back
+
+=head3 C<icmp> probe
+
+Uses L<Net::Ping> to perform C<ICMP> probes, that is,
+to send a ping packet to the given host and port.
+
+C<size> of ping packets is not currently supported.
+
+C<proto> is an additional key that allows to specify
+whether the pings should be sent via UDP or TCP. Remember
+that to send ICMP UDP packets you need root privileges.
+
+B<The ICMP probe code will automatically switch to TCP if the
+necessary privileges are not available>.
 
 =cut
 
