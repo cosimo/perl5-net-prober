@@ -13,7 +13,7 @@ Net::Prober - Probes network hosts for downtime, latency, etc...
     use Net::Prober;
 
     my $result = Net::Prober::probe({
-        proto => 'tcp',
+        class => 'tcp',
         port => 'ssh',
         host => 'localhost',
         timeout => 0.5,
@@ -135,11 +135,7 @@ unchanged.
 =cut
 
 sub port_name_to_num {
-    my ($self, $port) = @_;
-
-    if (! $port) {
-        $port = $self;
-    }
+    my ($port) = @_;
 
     if (defined $port and $port ne "" and $port =~ m{^\D}) {
         $port = (getservbyname($port, "tcp"))[2];
@@ -298,43 +294,24 @@ necessary privileges are not available>.
 sub probe {
     my ($probe_type) = @_;
 
+    if (! $probe_type || ref $probe_type ne 'HASH') {
+        Carp::croak("Invalid probe data");
+    }
+
     my $host = $probe_type->{host};
     if (! defined $host or $host eq "") {
-        Carp::croak("Can't probe undefined host\n");
+        Carp::croak("Can't probe undefined host");
     }
 
-    my $proto = lc($probe_type->{proto} || 'tcp');
-    my $port  = $probe_type->{port};
+    my %probe_args = %{ $probe_type };
+    my $class = lc ($probe_args{class} || 'tcp');
 
     # Resolve port names (http => 80)
-    $port = port_name_to_num($port);
+    $probe_args{port} = port_name_to_num($probe_args{port});
 
-    my $probe = {
-        host     => $host,
-        port     => $port,
-        proto    => $proto,
-        url      => $probe_type->{url} || '/',
-        timeout  => $probe_type->{timeout} || 1.0,
-        md5      => $probe_type->{md5},
-        match    => $probe_type->{match},
-    };
-
-    my $result;
-    if ($proto eq 'http' || $proto eq 'https') {
-        $result = probe_http($probe);
-    }
-    elsif ($proto eq 'tcp') {
-        $result = probe_tcp($probe);
-    }
-    elsif ($proto eq 'icmp') {
-        $result = probe_icmp($probe);
-    }
-    else {
-        Carp::croak("Not implemented $proto probe yet");
-    }
+    my $result = probe_any($class, \%probe_args);
 
     return $result;
 }
 
 1;
-
