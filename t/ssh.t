@@ -19,7 +19,7 @@ use Test::More tests => 7;
 use Net::Prober;
 
 my $result = Net::Prober::probe_ssh({
-    host => 'ssh.com',
+    host => 'sdf.org',
     timeout => 10.0,
 });
 
