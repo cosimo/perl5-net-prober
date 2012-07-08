@@ -27,7 +27,7 @@ ok(exists $result->{ok} && $result->{ok} =~ m{^[01]$},
 
 ok(exists $result->{time}
     && $result->{time} > 0.0
-    && $result->{time} < 1.0,
+    && $result->{time} < 5.0,
     "Got a ping time too ($result->{time}s)",
 );
 
