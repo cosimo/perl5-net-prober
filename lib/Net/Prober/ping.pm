@@ -9,8 +9,9 @@ sub defaults {
         host    => undef,
         port    => undef,
         timeout => undef,
-        # icmp requires root privileges
-        proto   => ($< | $>) ? 'tcp' : 'icmp',
+        # icmp requires root privileges, but we don't use tcp
+        # because it may incorrectly report hosts as down
+        proto   => 'icmp',
         size    => undef,
     };
 }

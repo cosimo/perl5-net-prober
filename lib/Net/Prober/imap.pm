@@ -12,14 +12,15 @@ sub defaults {
         username => undef,
         password => undef,
         mailbox  => 'inbox',
+        ssl      => 0,
     };
 }
 
 sub probe {
     my ($self, $args) = @_;
 
-    my ($host, $port, $timeout, $username, $password, $mailbox) =
-        $self->parse_args($args, qw(host port timeout username password mailbox));
+    my ($host, $port, $timeout, $username, $password, $mailbox, $ssl) =
+        $self->parse_args($args, qw(host port timeout username password mailbox ssl));
 
     my $t0 = $self->time_now();
 
@@ -79,7 +80,7 @@ sub _send_command {
 
 sub _get_reply {
     my ($self, $sock) = @_;
-    $sock->recv(my $reply, 1024);
+    $sock->read(my $reply, 1024);
     $reply =~ s{^\s+}{};
     $reply =~ s{\s+$}{};
     return $reply;

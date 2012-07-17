@@ -1,5 +1,15 @@
 Revision history for Net::Prober
 
+0.06 - Tue Jul 17 09:22:19 Europe/Oslo 2012
+
+    Changed 'proto' to 'protocol' in the probe arguments (...)
+
+    Changed default ping protocol when you don't have
+      superuser privileges. tcp pings in most cases report
+      hosts down incorrectly.
+
+    IMAP probing through SSL doesn't work at the moment.
+
 0.05 - Wed Oct 26 16:10:36 Europe/Oslo 2011
 
     Fixed a flapping test in t/http.t due to some changes

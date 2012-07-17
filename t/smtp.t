@@ -19,7 +19,7 @@ use Test::More tests => 4;
 use Net::Prober;
 
 my $result = Net::Prober::probe_smtp({
-    host => 'mail.messagingengine.com',
+    host => 'smtp.gmail.com',
     port => 587,
     ssl  => 0,
     timeout => 10.0,

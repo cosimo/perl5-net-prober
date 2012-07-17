@@ -13,7 +13,14 @@ Try to probe hosts via a ICMP ping
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More;
+
+if (my $running_as_root = ! ($< | $>)) {
+    plan tests => 8;
+} else {
+    plan skip_all => "icmp ping requires superuser privileges";
+}
+
 use Net::Prober;
 
 my $result = Net::Prober::probe_icmp({

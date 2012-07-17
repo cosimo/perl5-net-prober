@@ -29,7 +29,7 @@ Net::Prober - Probes network hosts for downtime, latency, etc...
     # or...
 
     my $result = Net::Prober::probe({
-        proto => 'http',
+        protocol => 'http',
         host => 'www.opera.com',
         url => '/browser',
         match => 'Faster',
@@ -98,7 +98,7 @@ the Varnish probe config block:
         "1.2.3.4" : {
             "datacenter" : "norway1",
             "probe" : {
-                "proto": "tcp",
+                "protocol": "tcp",
                 "port" : "8432",
                 "timeout" : 1.0,
             },
@@ -200,7 +200,7 @@ Allowed hash keys are:
 
 =over 4
 
-=item C<proto>
+=item C<protocol>
 
 What type of probe you want to run.
 Can be any of C<tcp>, C<http>, C<icmp>.
@@ -229,7 +229,7 @@ Returns the results as hashref. Example:
     my $result = Net::Prober::probe({
         host => 'localhost',
         port => 'ssh',
-        proto => 'tcp',
+        protocol => 'tcp',
         timeout => 0.5,
     });
 
@@ -282,7 +282,7 @@ to send a ping packet to the given host and port.
 
 C<size> of ping packets is not currently supported.
 
-C<proto> is an additional key that allows to specify
+C<protocol> is an additional key that allows to specify
 whether the pings should be sent via UDP or TCP. Remember
 that to send ICMP UDP packets you need root privileges.
 
