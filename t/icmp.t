@@ -15,7 +15,17 @@ use warnings;
 
 use Test::More;
 
-if (my $running_as_root = ! ($< | $>)) {
+my $running_as_root = ! ($< | $>);
+
+# Apparently on Windows, as on *nix, you can't ICMP unless you're superuser
+# http://www.cpantesters.org/cpan/report/606fe1d8-7078-1014-aabe-a80e3373d4b5
+if ($^O =~ m{MSWin32}) {
+    require Win32;  # not sure it's needed
+    $running_as_root = Win32::IsAdminUser();
+}
+
+my $can_icmp = $running_as_root;
+if ($can_icmp) {
     plan tests => 8;
 } else {
     plan skip_all => "icmp ping requires superuser privileges";

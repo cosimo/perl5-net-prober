@@ -109,7 +109,7 @@ the Varnish probe config block:
 
 =cut
 
-use 5.006;
+use 5.010;
 use strict;
 use warnings;
 
