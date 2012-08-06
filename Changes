@@ -1,5 +1,12 @@
 Revision history for Net::Prober
 
+0.07 - Mon Aug  6 15:50:55 Europe/Oslo 2012
+
+    Net::Prober now requires perl 5.10.0, which was released in 2007.
+
+    Fixed icmp probing on Win32 when user has no admin powers.
+      Thanks to CPAN testers once again!
+
 0.06 - Tue Jul 17 09:22:19 Europe/Oslo 2012
 
     Changed 'proto' to 'protocol' in the probe arguments (...)
