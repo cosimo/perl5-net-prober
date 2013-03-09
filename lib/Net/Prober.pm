@@ -73,6 +73,18 @@ matches a given regular expression, or has an exact md5 hash.
 
 =back
 
+=head1 LOGGING TO SYSLOG
+
+It is possible to enable automatic logging to syslog.
+It was in fact the default before version C<0.08>.
+
+To do that, include in your script:
+
+    use Net::Prober;
+    $Net::Prober::Probe::Base::USE_SYSLOG = 1;
+
+Not very pretty, I know.
+
 =head1 MOTIVATION
 
 There must be tons of ready-made modules that do exactly
@@ -120,6 +132,8 @@ use IO::Socket::INET ();
 use LWPx::ParanoidAgent ();
 use Net::Ping ();
 use Time::HiRes ();
+
+use Net::Prober::Probe::Base ();
 
 =head1 FUNCTIONS
 

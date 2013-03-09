@@ -7,6 +7,8 @@ use Carp ();
 use Time::HiRes ();
 use Sys::Syslog ();
 
+our $USE_SYSLOG = 0;
+
 sub new {
     my ($class, $opt) = @_;
 
@@ -42,12 +44,14 @@ sub probe_failed {
         $info{time} = $elapsed;
     }
 
-    my $msg = sprintf "Probe %s failed, reason %s, elapsed: %3.2f s",
-        $name,
-        $info{reason} || 'unknown',
-        $info{time};
+    if ($USE_SYSLOG) {
+        my $msg = sprintf "Probe %s failed, reason %s, elapsed: %3.2f s",
+            $name,
+            $info{reason} || 'unknown',
+            $info{time};
 
-    Sys::Syslog::syslog('warning', $msg);
+        Sys::Syslog::syslog('warning', $msg);
+    }
 
     return { ok => 0, %info };
 }
@@ -64,9 +68,11 @@ sub probe_ok {
         $info{time} = $elapsed;
     }
 
-    my $msg = sprintf "Probe %s ok, elapsed: %3.2f s",
-        $name, $info{time};
-    Sys::Syslog::syslog('info', $msg);
+    if ($USE_SYSLOG) {
+        my $msg = sprintf "Probe %s ok, elapsed: %3.2f s",
+            $name, $info{time};
+        Sys::Syslog::syslog('info', $msg);
+    }
 
     return { ok => 1, %info };
 }
