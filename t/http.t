@@ -40,7 +40,7 @@ ok(exists $result->{md5}
 $result = Net::Prober::probe({
     class   => 'http',
     host    => 'www.opera.com',
-    url     => '/browser/',
+    url     => '/computer/',
     match   => 'Opera',
     timeout => 5.0,
 });
