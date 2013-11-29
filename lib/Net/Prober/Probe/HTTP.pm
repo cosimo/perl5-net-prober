@@ -15,11 +15,12 @@ sub defaults {
 
     my %http_defaults = (
         %{ $defaults },
-        md5     => undef,
-        port    => 80,
-        scheme  => 'http',
-        url     => '/',
-        match   => undef,
+        md5          => undef,
+        port         => 80,
+        scheme       => 'http',
+        url          => '/',
+        match        => undef,
+        up_status_re => '^[23]\d\d$',
     );
 
     return \%http_defaults;
@@ -38,8 +39,8 @@ sub agent {
 sub probe {
     my ($self, $args) = @_;
 
-    my ($host, $port, $timeout, $scheme, $url, $expected_md5, $content_match) =
-        $self->parse_args($args, qw(host port timeout scheme url md5 match));
+    my ($host, $port, $timeout, $scheme, $url, $expected_md5, $content_match, $up_status_re) =
+        $self->parse_args($args, qw(host port timeout scheme url md5 match up_status_re));
 
     if (defined $scheme) {
         if ($scheme eq 'http') {
@@ -63,12 +64,35 @@ sub probe {
     my $resp = $ua->get($probe_url);
     my $elapsed = $self->time_elapsed();
     my $content = $resp->content();
-    my $good = $resp->is_redirect() || $resp->is_success();
+    my $status = $resp->code();
+
+    my $good = 0;
+    my $reason;
+
+    if (! $up_status_re || ! defined $status || ! $status) {
+        $good = $resp->is_redirect() || $resp->is_success();
+        if (! $good) {
+            $reason = "Response HTTP status code wasn't successful (2xx or 3xx)";
+        }
+    }
+    elsif ($up_status_re && defined $status) {
+        my $match_re;
+        eval {
+            $match_re = qr{$up_status_re}ms;
+        } or do {
+            Carp::croak("Invalid regex for HTTP status match '$up_status_re'\n");
+        };
+        $good = $status =~ $match_re;
+        if (! $good) {
+            $reason = "Response HTTP status code didn't match the specified regex ('$up_status_re')";
+        }
+    }
 
     if ($good and defined $expected_md5) {
         my $md5 = Digest::MD5::md5_hex($content);
         if ($md5 ne $expected_md5) {
             $good = 0;
+            $reason = "Response body MD5 sum wasn't the expected ($expected_md5)";
         }
     }
 
@@ -81,6 +105,7 @@ sub probe {
         };
         if ($content !~ $match_re) {
             $good = 0;
+            $reason = "Content didn't match the specified '$content_match' regex";
         }
     }
 
@@ -95,6 +120,7 @@ sub probe {
         : undef;
 
     $status{md5} = $md5 if $md5;
+    $status{reason} = $reason if defined $reason;
 
     if ($good) {
         return $self->probe_ok(%status);

@@ -13,6 +13,7 @@ Try to probe hosts via HTTP connections
 use strict;
 use warnings;
 
+use Data::Dumper;
 use LWP::Online ':skip_all';
 use Test::More tests => 7;
 
@@ -34,8 +35,8 @@ ok(exists $result->{time}
 );
 ok(exists $result->{md5}
     && $result->{md5} eq 'f5a3cf5f5891652a2b148d40fb400a84',
-    "Got the correct 'md5' value"
-);
+    "Got the correct 'md5' value")
+    or diag($result->{reason});
 
 $result = Net::Prober::probe({
     class   => 'http',
@@ -45,22 +46,24 @@ $result = Net::Prober::probe({
     timeout => 5.0,
 });
 
-ok($result->{ok});
+ok($result->{ok}) or diag($result->{reason});
 
 my $t0 = time;
 
 $result = Net::Prober::probe_http({
-    host => 'localhost',
-    port => 8433,
-    url  => '/ping.html',
+    host    => 'localhost',
+    port    => 8433,
+    url     => '/ping.html',
     timeout => 1.0,
+    # Any result will be considered successful
+    up_status_re => '^...$',
 });
 
 my $t1 = time;
 
-ok(exists $result->{ok} && $result->{ok} =~ m{^[01]$},
-    "Result status ('ok') shouldn't be a blank string"
-);
+ok(exists $result->{ok} && $result->{ok} == 1,
+    "Result should be successful because of up_status_re")
+    or diag($result->{reason});
 
 ok(($t1 - $t0) <= 2,
     "Probe of unavailable service should honor timeout"

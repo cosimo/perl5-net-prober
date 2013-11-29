@@ -287,6 +287,19 @@ MD5 hash. B<You can calculate the MD5 of a given URL with>:
 
 What URL to download. By default it uses C</>.
 
+=item C<up_status_re>
+
+By default, any HTTP response with status 2xx or 3xx (redirect)
+will be considered successful. However, it is also possible to specify
+your own custom regular expression instead. In this way, you can consider
+"healthy" a host that replies to your HTTP probe with a 404 (not found)
+or other status code.
+
+Example:
+
+    up_status_re => '^[234]'
+    up_status_re => '^30[12]$'
+
 =back
 
 =head3 C<icmp> probe

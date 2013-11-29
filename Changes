@@ -1,5 +1,16 @@
 Revision history for Net::Prober
 
+0.09 - Fri Nov 29 11:03:01 Europe/Oslo 2013
+
+    Added "up_status_re" option (regular expression) to HTTP probe class,
+      to allow custom regular expressions when matching against response HTTP
+      status to determine good health. F.ex. this allows for 404 responses to
+      be considered good health indicators (host up rather than down).
+
+    Added a "reason" value in the HTTP probe results, so you can consult it to
+      know why an HTTP probe failed. Note that this is only available for
+      HTTP probes for now.
+
 0.08 - Sat Mar  9 12:06:20 Europe/Oslo 2013
 
     Disabled log to syslog by default by popular demand.
