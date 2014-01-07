@@ -1,5 +1,10 @@
 Revision history for Net::Prober
 
+0.10 - Mon Jan  7 17:05:00 Europe/Oslo 2014
+
+    Added arbitrary HTTP method probing, with POST requests support,
+      including request body and HTTP headers.
+
 0.09 - Fri Nov 29 11:03:01 Europe/Oslo 2013
 
     Added "up_status_re" option (regular expression) to HTTP probe class,

@@ -15,11 +15,14 @@ sub defaults {
 
     my %http_defaults = (
         %{ $defaults },
+        headers      => undef,
         md5          => undef,
+        method       => 'GET',
         port         => 80,
         scheme       => 'http',
         url          => '/',
         match        => undef,
+        body         => undef,
         up_status_re => '^[23]\d\d$',
     );
 
@@ -36,11 +39,13 @@ sub agent {
     return $ua;
 }
 
-sub probe {
+sub _prepare_request {
     my ($self, $args) = @_;
 
-    my ($host, $port, $timeout, $scheme, $url, $expected_md5, $content_match, $up_status_re) =
-        $self->parse_args($args, qw(host port timeout scheme url md5 match up_status_re));
+    my ($host, $port, $timeout, $scheme, $url, $method, $body, $headers) =
+        $self->parse_args($args, qw(host port timeout scheme url method body headers));
+
+    $method ||= "GET";
 
     if (defined $scheme) {
         if ($scheme eq 'http') {
@@ -55,13 +60,42 @@ sub probe {
     }
 
     $url =~ s{^/+}{};
-
     my $probe_url = "$scheme://$host:$port/$url";
+
+    my @req_args = ($method, $probe_url);
+
+    if ($headers && ref $headers eq "ARRAY") {
+        my $req_headers = HTTP::Headers->new();
+        $req_headers->header(@{ $headers });
+        push @req_args, $req_headers;
+    }
+
+    if ($body) {
+        push @req_args, $body;
+    }
+
+    return HTTP::Request->new(@req_args);
+}
+
+sub probe {
+    my ($self, $args) = @_;
+
+    my ($expected_md5, $content_match, $up_status_re, $timeout) =
+        $self->parse_args($args, qw(md5 match up_status_re timeout));
 
     $self->time_now();
 
     my $ua = $self->agent();
-    my $resp = $ua->get($probe_url);
+
+    if (defined $timeout && $timeout > 0) {
+        $ua->timeout($timeout);
+    }
+
+    my $req = $self->_prepare_request($args);
+
+    # Fire in the hole!
+    my $resp = $ua->request($req);
+
     my $elapsed = $self->time_elapsed();
     my $content = $resp->content();
     my $status = $resp->code();
