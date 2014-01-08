@@ -19,9 +19,9 @@ use Test::More tests => 6;
 use Net::Prober;
 
 my $result = Net::Prober::probe_tcp({
-    proto => 'tcp',
-    port => 'ssh',
-    host => 'localhost',
+    proto   => 'tcp',
+    port    => '22',
+    host    => 'localhost',
     timeout => 0.5,
 });
 
@@ -37,9 +37,9 @@ ok(exists $result->{time}
 );
 
 $result = Net::Prober::probe_tcp({
-    proto => 'udp',
-    port => 'echo',
-    host => 'localhost',
+    proto   => 'udp',
+    port    => 'echo',
+    host    => 'localhost',
     timeout => 0.5,
 });
 
@@ -53,4 +53,3 @@ ok(exists $result->{time}
     && $result->{time} <= 1.0,
     "Got an elapsed time too ($result->{time}s)",
 );
-

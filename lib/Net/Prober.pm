@@ -13,14 +13,14 @@ Net::Prober - Probes network hosts for downtime, latency, etc...
     use Net::Prober;
 
     my $result = Net::Prober::probe({
-        class => 'tcp',
-        port => 'ssh',
-        host => 'localhost',
-        timeout => 0.5,
+        class   => 'tcp',
+        port    => 'ssh',
+        host    => 'localhost',
+        timeout => 3.5,
     });
 
     # $result = {
-    #   ok => 1,
+    #   ok   => 1,
     #   time => 0.0002345,
     #   host => '127.0.0.1',
     #   port => 22,
@@ -30,9 +30,9 @@ Net::Prober - Probes network hosts for downtime, latency, etc...
 
     my $result = Net::Prober::probe({
         protocol => 'http',
-        host => 'www.opera.com',
-        url => '/browser',
-        match => 'Faster',
+        host     => 'www.opera.com',
+        url      => '/browser',
+        match    => 'Faster',
     });
 
 =head1 DESCRIPTION
