@@ -1,11 +1,16 @@
 Revision history for Net::Prober
 
-0.11 - Mon Jan  8 09:35:00 Europe/Oslo 2014
+0.12 - Mon Jan 13 11:27:00 Europe/Oslo 2014
+
+    Fixed t/http.t tests failing due to a change in the remote website being
+      tested (multiple cpan testers reports).
+
+0.11 - Tue Jan  7 09:35:00 Europe/Oslo 2014
 
     Fixed t/tcp.t and t/port-names.t test failures on Windows platform:
     http://www.cpantesters.org/cpan/report/bfda167b-6d80-1014-b726-584155012b15
 
-0.10 - Mon Jan  7 17:05:00 Europe/Oslo 2014
+0.10 - Mon Jan  6 17:05:00 Europe/Oslo 2014
 
     Added arbitrary HTTP method probing, with POST requests support,
       including request body and HTTP headers.

@@ -41,9 +41,9 @@ ok(exists $result->{md5}
 $result = Net::Prober::probe({
     class   => 'http',
     host    => 'www.opera.com',
-    url     => '/computer/',
+    url     => '/computer',
     match   => 'Opera',
-    timeout => 5.0,
+    timeout => 10.0,
 });
 
 ok($result->{ok}) or diag($result->{reason});
