@@ -20,7 +20,7 @@ use Test::More tests => 7;
 use Net::Prober;
 
 my $result = Net::Prober::probe_http({
-    host => 'static.myopera.com',
+    host => 'sitecheck.opera.com',
     url  => '/ping.html',
     md5  => 'f5a3cf5f5891652a2b148d40fb400a84',
     timeout => 3.0,
