@@ -60,7 +60,13 @@ sub _prepare_request {
     }
 
     $url =~ s{^/+}{};
-    my $probe_url = "$scheme://$host:$port/$url";
+
+    # We don't want to add :80 or :443 because some pesky Asian CDN
+    # doesn't like when Host header contains those default ports
+    my $probe_url = "$scheme://$host/$url";
+    if ($port != 80 && $port != 443) {
+        $probe_url = "$scheme://$host:$port/$url";
+    }
 
     my @req_args = ($method, $probe_url);
 
