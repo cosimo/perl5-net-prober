@@ -33,7 +33,7 @@ my $req = $probe->_prepare_request({
 
 is $req->method, "POST";
 
-is $req->uri, "http://www.altavista.com:80/ping.html";
+is $req->uri, "http://www.altavista.com/ping.html";
 
 #iag(Dumper($req->headers));
 #iag(Dumper($req));
