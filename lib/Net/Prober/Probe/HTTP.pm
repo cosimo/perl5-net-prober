@@ -55,7 +55,8 @@ sub _prepare_request {
             $port ||= 443;
         }
     }
-    elsif (defined $port) {
+
+    if (defined $port) {
         $scheme = $port == 443 ? "https" : "http";
     }
 
