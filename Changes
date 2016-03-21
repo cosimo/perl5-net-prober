@@ -1,5 +1,16 @@
 Revision history for Net::Prober
 
+0.15 - Mon Mar 21 17:02:00 Europe/Oslo 2016
+
+    Fixed use of "scheme" and "port" arguments together in the same probe
+      request. Request would be made with the default for "port" attribute
+      (e.g. 80) even if scheme was set to "https" and port to 443.
+
+0.14 - Fri Sep 26 10:00:00 Europe/Oslo 2014
+
+    Fixed use of port number in Hostname header, as it was causing some HTTP
+      probe requests to fail with Tata CDN endpoints.
+
 0.12 - Mon Jan 13 11:27:00 Europe/Oslo 2014
 
     Fixed t/http.t tests failing due to a change in the remote website being
