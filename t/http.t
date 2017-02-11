@@ -15,28 +15,24 @@ use warnings;
 
 use Data::Dumper;
 use LWP::Online ':skip_all';
-use Test::More tests => 7;
+use Test::More tests => 6;
 
 use Net::Prober;
 
 my $result = Net::Prober::probe_http({
-    host => 'sitecheck.opera.com',
-    url  => '/ping.html',
-    md5  => 'f5a3cf5f5891652a2b148d40fb400a84',
-    timeout => 3.0,
+    host    => 'sitecheck2.opera.com',
+    url     => '/ping',
+    match   => 'pong',
+    timeout => 5.0,
 });
 
 ok($result && ref $result eq 'HASH', 'probe_http() returns a hashref');
 ok(exists $result->{ok} && $result->{ok}, 'Page downloaded and MD5 verified');
 ok(exists $result->{time}
     && $result->{time} > 0.0
-    && $result->{time} <= 3.0,
+    && $result->{time} <= 5.0,
     "Got an elapsed time too ($result->{time}s)",
 );
-ok(exists $result->{md5}
-    && $result->{md5} eq 'f5a3cf5f5891652a2b148d40fb400a84',
-    "Got the correct 'md5' value")
-    or diag($result->{reason});
 
 $result = Net::Prober::probe({
     class   => 'http',
@@ -68,4 +64,3 @@ ok(exists $result->{ok} && $result->{ok} == 1,
 ok(($t1 - $t0) <= 2,
     "Probe of unavailable service should honor timeout"
 );
-
